@@ -72,19 +72,20 @@ using namespace std;
 // Adapted from https://github.com/codeplea/incbeta
 double incbeta(double a, double b, double x)
 {
-    if (x < 0.0 || x > 1.0)
-        return 1.0 / 0.0;
-
-    if (a <= 0.)
+    if ((x < 0.0) || (x > 1.0))
+    {
+        return 0.0;
+    }
+    if (a <= 0.0)
     {
         std::cout << "Warning: a should be >0";
-        return 0.;
+        return 0.0;
     }
 
-    if (b <= 0.)
+    if (b <= 0.0)
     {
         std::cout << "Warning: b should be >0";
-        return 0.;
+        return 0.0;
     }
 
     /*The continued fraction converges nicely for x < (a+1)/(a+b+2)*/
@@ -139,26 +140,26 @@ double incbeta(double a, double b, double x)
         }
     }
 
-    return 1.0 / 0.0; /*Needed more loops, did not converge.*/
+    return 0; /*Needed more loops, did not converge.*/
 }
 
 double invincbeta(double y, double alpha, double beta)
 {
 
-    if (y <= 0.)
-        return 0.;
-    else if (y >= 1.)
-        return 1.;
-    if (alpha <= 0.)
+    if (y <= 0.0)
+        return 0.0;
+    else if (y >= 1.0)
+        return 1.0;
+    if (alpha <= 0.0)
     {
         std::cout << "Warning: alpha should be >0";
-        return 0.;
+        return 0.0;
     }
 
-    if (beta <= 0.)
+    if (beta <= 0.0)
     {
         std::cout << "Warning: beta should be >0";
-        return 0.;
+        return 0.0;
     }
 
     double x = 0.5;
@@ -196,11 +197,11 @@ double CalculateTValueStudent(const double nu, const double alpha)
 
     double precision = 1.e-5;
 
-    if (alpha <= 0. || alpha >= 1.)
-        return 0.;
+    if (alpha <= 0.0 || alpha >= 1.0)
+        return 0.0;
 
-    double x = invincbeta(2. * min(alpha, 1. - alpha), 0.5 * nu, 0.5);
-    x = sqrt(nu * (1. - x) / x);
+    double x = invincbeta(2.0 * min(alpha, 1.0 - alpha), 0.5 * nu, 0.5);
+    x = sqrt(nu * (1.0 - x) / x);
     return (alpha >= 0.5 ? x : -x);
 }
 
@@ -210,7 +211,7 @@ double cdfStudent(const double nu, const double t)
 {
     double x = nu / (t * t + nu);
 
-    return 1. - incbeta(0.5 * nu, 0.5, x);
+    return 1.0 - incbeta(0.5 * nu, 0.5, x);
 }
 
 // Cumulative distribution for Fisher F
@@ -238,7 +239,7 @@ double **Make2DArray(const size_t rows, const size_t cols)
     {
         for (size_t j = 0; j < cols; j++)
         {
-            array[i][j] = 0.;
+            array[i][j] = 0.0;
         }
     }
 
@@ -274,7 +275,7 @@ double **MatMul(const size_t m1, const size_t m2, const size_t m3, double **A, d
     {
         for (size_t j = 0; j < m3; j++)
         {
-            array[i][j] = 0.;
+            array[i][j] = 0.0;
             for (size_t m = 0; m < m2; m++)
             {
                 array[i][j] += A[i][m] * B[m][j];
@@ -291,7 +292,7 @@ void MatVectMul(const size_t m1, const size_t m2, double **A, double *v, double 
 
     for (size_t i = 0; i < m1; i++)
     {
-        Av[i] = 0.;
+        Av[i] = 0.0;
         for (size_t j = 0; j < m2; j++)
         {
             Av[i] += A[i][j] * v[j];
@@ -305,7 +306,7 @@ double determinant(double **a, const size_t k)
 {
 
     double s = 1;
-    double det = 0.;
+    double det = 0.0;
     double **b = Make2DArray(k, k);
     size_t m;
     size_t n;
@@ -449,8 +450,8 @@ double CalculateRSS(const double *x, const double *y, const double *a, double **
                     const bool fixed, const size_t N, const size_t n)
 {
 
-    double r2 = 0.;
-    double ri = 0.;
+    double r2 = 0.0;
+    double ri = 0.0;
     for (size_t i = 0; i < N; i++)
     {
         ri = y[i];
@@ -470,10 +471,10 @@ double CalculateTSS(const double *x, const double *y, const double *a, double **
                     const bool fixed, const size_t N, const size_t n)
 {
 
-    double r2 = 0.;
-    double ri = 0.;
-    double sumwy = 0.;
-    double sumweights = 0.;
+    double r2 = 0.0;
+    double ri = 0.0;
+    double sumwy = 0.0;
+    double sumweights = 0.0;
     size_t begin = 0;
     if (fixed)
     {
@@ -509,7 +510,7 @@ double CalculateR2COD(const double *x, const double *y, const double *a, double 
 
     double RSS = CalculateRSS(x, y, a, Weights, fixed, N, n);
     double TSS = CalculateTSS(x, y, a, Weights, fixed, N, n);
-    double R2 = 1. - RSS / TSS;
+    double R2 = 1.0 - RSS / TSS;
 
     return R2;
 }
@@ -528,11 +529,11 @@ double CalculateR2Adj(const double *x, const double *y, const double *a, double 
 
     if (fixed)
     {
-        dferr += 1.;
-        dftot += 1.;
+        dferr += 1.0;
+        dftot += 1.0;
     }
 
-    double R2Adj = 1. - (dftot) / (dferr)*RSS / TSS;
+    double R2Adj = 1.0 - (dftot) / (dferr)*RSS / TSS;
 
     return R2Adj;
 }
@@ -574,7 +575,7 @@ void PolyFit(const double *x, double *y, const size_t n, const size_t k, const b
     XTWX = MatMul(k + 1, n, k + 1, XTW, X); // Calculate (XTW)*X
 
     if (fixedinter)
-        XTWX[0][0] = 1.;
+        XTWX[0][0] = 1.0;
 
     cofactor(XTWX, XTWXInv, k + 1); // Calculate (XTWX)^-1
 
@@ -613,7 +614,7 @@ void PolyFit(const double *x, double *y, const size_t n, const size_t k, const b
 double calculatePoly(const double x, const double *a, const size_t n)
 {
 
-    double poly = 0.;
+    double poly = 0.0;
 
     for (size_t i = 0; i < n; i++)
     {
@@ -631,7 +632,7 @@ void WriteCIBands(std::string filename, const double *x, const double *coefbeta,
 
     double interval = (x[n - 1] - x[0]);
     double x1, y0, y1, y2, y3, y4;
-    double xstar[k + 1];
+    double *xstar = new double[k + 1];
     double xprod = 0.;
 
     ofstream output;
@@ -639,13 +640,13 @@ void WriteCIBands(std::string filename, const double *x, const double *coefbeta,
 
     for (int i = 0; i < 101; i++)
     {
-        x1 = x[0] + interval / 100. * i;
+        x1 = x[0] + interval / 100.0 * i;
         for (size_t j = 0; j < k + 1; j++)
         {
             xstar[j] = pow(x1, j);
         }
 
-        xprod = 0.;
+        xprod = 0.0;
         for (size_t j = 0; j < (k + 1); j++)
         {
             for (size_t m = 0; m < (k + 1); m++)
@@ -679,19 +680,19 @@ void CalculateWeights(const double *erry, double **Weights, const size_t n,
         switch (type)
         {
         case 0:
-            Weights[i][i] = 1.;
+            Weights[i][i] = 1.0;
             break;
         case 1:
             Weights[i][i] = erry[i];
             break;
         case 2:
-            if (erry[i] > 0.)
+            if (erry[i] > 0.0)
             {
                 Weights[i][i] = 1. / (erry[i] * erry[i]);
             }
             else
             {
-                Weights[i][i] = 0.;
+                Weights[i][i] = 0.0;
             }
             break;
         }
@@ -707,7 +708,7 @@ void CalculateSERRBeta(const bool fixedinter, const double SE, size_t k, double 
     if (fixedinter)
         begin = 1;
 
-    serbeta[0] = 0.;
+    serbeta[0] = 0.0;
     for (size_t i = begin; i < (k + 1); i++)
     {
         serbeta[i] = SE * sqrt(XTWXInv[i][i]);
@@ -742,7 +743,7 @@ void DisplayANOVA(const size_t nstar, const size_t k, const double TSS, const do
     double MSReg = (TSS - RSS) / (k);
     double MSE = RSS / (nstar - k);
     double FVal = MSReg / MSE;
-    double pFVal = 1. - cdfFisher(k, nstar - k, FVal);
+    double pFVal = 1.0 - cdfFisher(k, nstar - k, FVal);
 
     cout << "ANOVA" << endl;
     cout << "\tDF\tSum squares\tMean square\tF value\tProb>F" << endl;
@@ -776,7 +777,7 @@ void DisplayCoefs(const size_t k, const size_t nstar, const double tstudentval, 
         if (serbeta[i] > 0)
         {
             cout << coefbeta[i] / serbeta[i] << "\t";
-            cout << 1. - cdfStudent(nstar - k, coefbeta[i] / serbeta[i]);
+            cout << 1.0 - cdfStudent(nstar - k, coefbeta[i] / serbeta[i]);
         }
         else
         {
@@ -821,7 +822,7 @@ void DisplayCovCorrMatrix(const size_t k, const double sigma, const bool fixed, 
     }
 
     if (fixed)
-        CovMatrix[0][0] = 1.;
+        CovMatrix[0][0] = 1.0;
 
     for (size_t i = 0; i < k + 1; i++)
     {
@@ -847,24 +848,24 @@ int main(int argc, char *argv[])
 
     // Input values
     // **************************************************************
-    size_t k = 2;              // Polynomial order
-    bool fixedinter = false;   // Fixed the intercept (coefficient A0)
-    int wtype = 0;             // Weight: 0 = none (default), 1 = sigma, 2 = 1/sigma^2
-    double fixedinterval = 0.; // The fixed intercept value (if applicable)
-    double alphaval = 0.05;    // Critical apha value
+    size_t k = 2;               // Polynomial order
+    bool fixedinter = false;    // Fixed the intercept (coefficient A0)
+    int wtype = 0;              // Weight: 0 = none (default), 1 = sigma, 2 = 1/sigma^2
+    double fixedinterval = 0.0; // The fixed intercept value (if applicable)
+    double alphaval = 0.05;     // Critical apha value
 
-    double x[] = {0., 0.5, 1.0, 2.0, 4.0, 6.0};
-    double y[] = {0., 0.21723, 0.43445, 0.99924, 2.43292, 4.77895};
+    double x[] = {0.0, 0.5, 1.0, 2.0, 4.0, 6.0};
+    double y[] = {0.0, 0.21723, 0.43445, 0.99924, 2.43292, 4.77895};
     double erry[] = {0.1, 0.3, 0.2, 0.4, 0.1, 0.3}; // Data points (err on y) (if applicable)
 
     // Definition of other variables
     // **************************************************************
-    size_t n = 0;            // Number of data points (adjusted later)
-    size_t nstar = 0;        // equal to n (fixed intercept) or (n-1) not fixed
-    double coefbeta[k + 1];  // Coefficients of the polynomial
-    double serbeta[k + 1];   // Standard error on coefficients
-    double tstudentval = 0.; // Student t value
-    double SE = 0.;          // Standard error
+    size_t n = 0;                         // Number of data points (adjusted later)
+    size_t nstar = 0;                     // equal to n (fixed intercept) or (n-1) not fixed
+    double *coefbeta = new double[k + 1]; // Coefficients of the polynomial
+    double *serbeta = new double[k + 1];  // Standard error on coefficients
+    double tstudentval = 0.0;             // Student t value
+    double SE = 0.0;                      // Standard error
 
     double **XTWXInv; // Matrix XTWX Inverse [k+1,k+1]
     double **Weights; // Matrix Weights [n,n]
@@ -911,7 +912,7 @@ int main(int argc, char *argv[])
     cout << "Weights" << endl;
     displayMat(Weights, n, n);
 
-    if (determinant(Weights, n) == 0.)
+    if (determinant(Weights, n) == 0.0)
     {
         cout << "One or more points have 0 error. Review the errors on points or use no weighting. ";
         cout << "Program stopped" << endl;
@@ -924,7 +925,7 @@ int main(int argc, char *argv[])
 
     // Calculate related values
     // **************************************************************
-    double RSS = CalculateRSS(x, y, coefbeta, Weights, fixed, n, k + 1);
+    double RSS = CalculateRSS(x, y, coefbeta, Weights, fixedinter, n, k + 1);
     double TSS = CalculateTSS(x, y, coefbeta, Weights, fixedinter, n, k + 1);
     double R2 = CalculateR2COD(x, y, coefbeta, Weights, fixedinter, n, k + 1);
     double R2Adj = CalculateR2Adj(x, y, coefbeta, Weights, fixedinter, n, k + 1);
@@ -932,7 +933,7 @@ int main(int argc, char *argv[])
     if ((nstar - k) > 0)
     {
         SE = sqrt(RSS / (nstar - k));
-        tstudentval = fabs(CalculateTValueStudent(nstar - k, 1. - 0.5 * alphaval));
+        tstudentval = fabs(CalculateTValueStudent(nstar - k, 1.0 - 0.5 * alphaval));
     }
     cout << "t-student value: " << tstudentval << endl
          << endl;
